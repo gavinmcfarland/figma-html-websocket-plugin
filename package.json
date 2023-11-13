@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "esbuild src/code.ts --bundle --target=es6 --loader:.svg=text --outfile=dist/code.js",
-    "server": "node preview-server.js"
+    "server": "node server.js"
   },
   "author": "",
   "license": "ISC",
