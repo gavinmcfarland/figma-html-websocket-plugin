@@ -1,0 +1,23 @@
+{
+  "name": "figma-html-websocket-plugin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/code.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/code.ts --bundle --target=es6 --loader:.svg=text --outfile=dist/code.js",
+    "server": "node preview-server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@figma/plugin-typings": "^1.81.0",
+    "esbuild": "^0.19.5",
+    "serve": "^14.2.1"
+  },
+  "devDependencies": {
+    "express": "^4.18.2",
+    "http-server": "^14.1.1",
+    "ws": "^8.14.2"
+  }
+}

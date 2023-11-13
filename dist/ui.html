@@ -1,0 +1,78 @@
+<div>Hello <span id="isConnected">(connected?)</span></div>
+
+<div className="header">
+    <span id="nodeText"></span>
+</div>
+
+
+
+<script>
+    const ws = {};
+
+    const onWindowMsg = msg => {
+        if (msg.data.pluginMessage) {
+
+            const message = JSON.stringify(msg.data.pluginMessage);
+
+            if (msg.data.pluginMessage && msg.data.pluginMessage.event === 'selected-text-nodes') {
+                nodeText.textContent = msg.data.pluginMessage.nodes[0].text
+            }
+
+            if (ws.current.readyState === 1) {
+                console.log("sent", message)
+                ws.current.send(message)
+            } else {
+                setTimeout(() => {
+                    onWindowMsg(msg);
+                }, 1000);
+            }
+        }
+    };
+
+    const startWebSocket = () => {
+        ws.current = new WebSocket("ws://localhost:9001/ws");
+        ws.current.onopen = () => {
+            console.log("ws opened");
+            // setIsConnected(true);
+            isConnected.textContent = "Is connected"
+        };
+        ws.current.onclose = () => {
+            console.log("ws closed");
+            // setIsConnected(false);
+            isConnected.textContent = "Not connected"
+
+            setTimeout(() => {
+                startWebSocket();
+            }, 3000);
+        };
+
+        ws.current.onmessage = event => {
+            try {
+                let msg = JSON.parse(event.data);
+                if (msg.src === "server") {
+                    let temp = JSON.parse(msg.message);
+                    window.parent.postMessage({ pluginMessage: temp }, '*')
+                }
+            } catch (err) {
+                console.error("not a valid message", err);
+            }
+            // return false;
+        };
+
+        window.addEventListener("message", onWindowMsg);
+
+        return () => {
+            ws.current.close();
+            window.removeEventListener("message", onWindowMsg);
+        };
+    };
+
+    // window.onmessage = (msg) => {
+    //     if (msg.data.pluginMessage && msg.data.pluginMessage.event === 'selected-text-nodes') {
+    //         console.log(msg.data.pluginMessage.nodes)
+    //     }
+    // }
+
+    startWebSocket()
+
+</script>
